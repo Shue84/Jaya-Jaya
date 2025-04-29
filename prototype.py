@@ -9,7 +9,7 @@ Original file is located at
 import streamlit as st
 import pandas as pd
 import joblib
-from data_preprocessing import data_preprocessing, encoder_Course, encoder_Daytime_evening_attendance, encoder_Fathers_occupation, encoder_Fathers_qualification, encoder_Gender, encoder_Marital_status, encoder_Mothers_occupation, encoder_Mothers_qualification, encoder_Previous_qualification, encoder_Scholarship_holder
+from data_preprocessing import data_preprocessing, onehot_encoder, encoder_Daytime_evening_attendance, encoder_Fathers_occupation, encoder_Fathers_qualification, encoder_Gender, encoder_Mothers_occupation, encoder_Mothers_qualification, encoder_Scholarship_holder
 from prediction import prediction
 
 col1, col2 = st.columns([1, 5])
