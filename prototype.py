@@ -31,14 +31,14 @@ with col2:
     data["Gender"] = [Gender]
 
 with col3:
-    Marital_status = st.selectbox(label='Marital_status', options=onehot_encoder.classes_, index=5)
+    Marital_status = st.selectbox(label='Marital_status', options=encoder_Course_Marital_status_Previous_qualification.classes_, index=5)
     data["Marital_status"] = Marital_status
 
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    Course = st.selectbox(label='Course', options=onehot_encoder.classes_, index=16)
+    Course = st.selectbox(label='Course', options=encoder_Course_Marital_status_Previous_qualification.classes_, index=16)
     data["Course"] = Course
 
 with col2:
@@ -71,7 +71,7 @@ with col4:
 col1, col2 = st.columns(2)
 
 with col1:
-    Previous_qualification = st.selectbox(label='Previous_qualification', options=onehot_encoder.classes_, index=16)
+    Previous_qualification = st.selectbox(label='Previous_qualification', options=encoder_Course_Marital_status_Previous_qualification.classes_, index=16)
     data["Previous_qualification"] = Previous_qualification
 
 with col2:
