@@ -5,7 +5,9 @@ fonttools==4.57.0
 idna==3.10
 kiwisolver==1.4.8
 joblib==1.4.2
+markdown-it-py==3.0.0
 matplotlib==3.10.0
+mdurl==0.1.2
 numpy==2.0.2
 packaging==24.2
 pandas==2.2.2
@@ -14,8 +16,9 @@ Pygments==2.19.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 requests==2.32.3
+rich==13.9.4
 scikit-learn==1.6.1
 seaborn==0.13.2
-streamlit==1.29.1
+streamlit==1.38.0
 typing_extensions==4.13.2
 urllib3==2.4.0
