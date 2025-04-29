@@ -11,7 +11,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-encoder_Course_Marital_status_Previous_qualification = joblib.load('/model/onehot_encoder.joblib')
+onehot_encoder = joblib.load('/model/onehot_encoder.joblib')
 encoder_Daytime_evening_attendance = joblib.load('/model/encoder_Daytime_evening_attendance.joblib')
 encoder_Fathers_occupation = joblib.load('/model/encoder_Fathers_occupation.joblib')
 encoder_Fathers_qualification = joblib.load('/model/encoder_Fathers_qualification.joblib')
