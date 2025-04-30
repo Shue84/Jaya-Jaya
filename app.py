@@ -66,11 +66,11 @@ with col3:
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    Fathers_qualification = st.selectbox(label='Fathers_qualification', options=encoder_Fathers_qualification.classes_, index=33)
+    Fathers_qualification = st.selectbox(label='Fathers_qualification', options=encoder_Fathers_qualification.classes_, index=30)
     data["Fathers_qualification"] = Fathers_qualification
 
 with col2:
-    Mothers_qualification = st.selectbox(label='Mothers_qualification', options=encoder_Mothers_qualification.classes_, index=28)
+    Mothers_qualification = st.selectbox(label='Mothers_qualification', options=encoder_Mothers_qualification.classes_, index=27)
     data["Mothers_qualification"] = Mothers_qualification
 
 with col3:
