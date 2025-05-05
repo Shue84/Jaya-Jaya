@@ -105,9 +105,12 @@ def data_preprocessing(data):
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
-    # PCA
-    X_pca_input = data[pca_numerical_columns].copy()  # Use original column names for PCA input!
-    X_pca_input = X_pca_input[pca_numerical_columns]
+   # Ensure columns are in the correct order and all exist
+    missing_cols = [col for col in pca_numerical_columns if col not in data.columns]
+    if missing_cols:
+        raise ValueError(f"Missing columns for PCA: {missing_cols}")
+
+    X_pca_input = data[pca_numerical_columns].copy()
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
@@ -115,3 +118,6 @@ def data_preprocessing(data):
     df = pd.concat([df, pca_df], axis=1)
 
     return df
+
+print("Expected PCA columns:", pca_numerical_columns)
+print("Actual columns:", list(X_pca_input.columns))
