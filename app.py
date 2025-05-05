@@ -51,7 +51,7 @@ input_data = {
     'Previous_qualification_grade': [None],
 }
 
-data = pd.DataFrame()
+data = pd.DataFrame(input_data)
 
 col1, col2, col3 = st.columns(3)
 
