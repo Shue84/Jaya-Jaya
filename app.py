@@ -22,36 +22,19 @@ with col2:
 # 1. Load the OneHotEncoder
 onehot_encoder = joblib.load('model/onehot_encoder.joblib')
 
-# 2. Get Feature Names (Correct Method)
-feature_names = onehot_encoder.get_feature_names_out(['Marital_status', 'Previous_qualification', 'Course'])
-#This is the correct way to get the feature names.
+# 2. Define the order of the columns as they were during training
+onehot_encoded_columns = ['Marital_status', 'Previous_qualification', 'Course']  # Correct order
 
-# 3. Define Original Categorical Values
+# 3. Get Feature Names (Correct Method)
+feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns) # Use the correct order
+# This is the correct way to get the feature names.
+
+# 4. Define Original Categorical Values
 marital_status_options = ['Single', 'Married',  'Widower', 'Divorced', 'Facto Union', 'Legally separated']
 course_options = ['33', '171', '8014', '9003', '9070', '9085', '9119', '9130', '9147', '9238', '9254', '9500', '9556', '9670', '9773' '9863', '9991']
 qualification_options = ['1', '2', '3', '4', '5', '6', '9', '10', '12', '14', '15', '19', '38', '39', '40', '42', '43']
 
-# 4. Initialize data DataFrame with correct column order for one-hot encoding
-input_data = {
-    'Marital_status': [None],
-    'Previous_qualification': [None],
-    'Course': [None],
-    'Daytime/evening attendance': [None],
-    'Fathers_occupation': [None],
-    'Fathers_qualification': [None],
-    'Gender': [None],
-    'Mothers_occupation': [None],
-    'Mothers_qualification': [None],
-    'Scholarship_holder': [None],
-    'Age_at_enrollment': [None],
-    'Curricular_units_1st_sem_approved': [None],
-    'Curricular_units_1st_sem_grade': [None],
-    'Curricular_units_2nd_sem_approved': [None],
-    'Curricular_units_2nd_sem_grade': [None],
-    'Previous_qualification_grade': [None],
-}
-
-data = pd.DataFrame(input_data)
+data = pd.DataFrame()
 
 col1, col2, col3 = st.columns(3)
 
