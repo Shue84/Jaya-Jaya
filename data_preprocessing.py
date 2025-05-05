@@ -60,7 +60,7 @@ def data_preprocessing(data):
             print(f"NaNs found in {col} before imputation.")
             # Impute with 0 if it's a single-row DataFrame, otherwise use the mean
             if len(data) == 1:
-                data[col] = data[col].fillna(0)  # Or another appropriate default (e.g., median)
+                data[col] = data[col].fillna(0)  # Or another appropriate default
             else:
                 data[col] = data[col].fillna(data[col].mean())
             print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
@@ -125,7 +125,12 @@ def data_preprocessing(data):
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
     pca_transformed = pca_1.transform(X_pca_input)
-    pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
+
+    # Use a dynamic column list for pca_df
+    num_pca_components = pca_transformed.shape[1]
+    pca_columns = [f'PCA_{i+1}' for i in range(num_pca_components)]
+    pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
+
     df_processed = pd.concat([df_processed, pca_df], axis=1)
     print("--- After PCA ---")
     print("Shape of df_processed:", df_processed.shape)
