@@ -51,15 +51,10 @@ def data_preprocessing(data):
     data = data.copy()
     df = pd.DataFrame()
 
-    # 1. Ensure correct columns and order for one-hot encoding
-    try:
-        encoded_cols = onehot_encoder.transform(data[original_ohe_columns])
-    except KeyError as e:
-        print(f"Error: Missing columns for one-hot encoding: {e}")
-        print(f"Input data columns: {data.columns}")
-        raise  # Re-raise the exception to stop processing
-        
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index)  
+    # One-hot encode the categorical features
+    encoded_cols = onehot_encoder.transform(
+        data['Marital_status', 'Previous_qualification', 'Course'])
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index)
     df = pd.concat([df, encoded_df], axis=1)
 
     # Encode the other categorical features
