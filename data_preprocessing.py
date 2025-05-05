@@ -35,6 +35,8 @@ pca_numerical_columns = [
     'Curricular_units_2nd_sem_grade',
     'Previous_qualification_grade'
 ]
+# Define the correct order of columns for one-hot encoding
+onehot_encoded_columns = ['Marital_status', 'Previous_qualification', 'Course']
 
 def data_preprocessing(data):
     """Preprocessing data
@@ -50,7 +52,7 @@ def data_preprocessing(data):
 
     # One-hot encode the categorical features
     encoded_cols = onehot_encoder.transform(
-        data[['Marital_status', 'Previous_qualification', 'Course']])
+        data[onehot_encoded_columns])  # Use the correct order here
     encoded_df = pd.DataFrame(encoded_cols, index=data.index)
     df = pd.concat([df, encoded_df], axis=1)
 
