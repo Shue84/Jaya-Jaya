@@ -64,13 +64,6 @@ def data_preprocessing(data):
     df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
-
-    # Impute missing values in numerical columns *before* scaling
-    for col in pca_numerical_columns:
-        if data[col].isnull().any():
-            print(f"NaNs found in {col} before imputation.")
-            data[col] = data[col].fillna(data[col].mean())
-            print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
     
     # PCA
     data['Age_at_enrollment'] = scaler_Age_at_enrollment.transform(data[['Age_at_enrollment']])
@@ -80,8 +73,10 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(data[['Curricular_units_2nd_sem_grade']])
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(data[['Previous_qualification_grade']])
 
-    # Create PCA input from the scaled data
-    X_pca_input = data[pca_1.feature_names_in_].copy()
+    X_pca_input = data.loc[:, pca_1.feature_names_in_]
+
+    if X_pca_input.isnull().any().any():
+        X_pca_input = X_pca_input.dropna()
 
     # Perform PCA
     pca_transformed = pca_1.transform(X_pca_input)
