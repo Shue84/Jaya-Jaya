@@ -48,24 +48,16 @@ def data_preprocessing(data):
         Pandas DataFrame: Dataframe that contain all the preprocessed data
     """
     data = data.copy()
-    df = pd.DataFrame()
+    df_processed = pd.DataFrame()  # Use a different name to avoid shadowing
 
-    # One-hot encode the categorical features
-    encoded_cols = onehot_encoder.transform(
-        data[onehot_encoded_columns])  # Use the correct order here
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out()) # added columns
-    df = pd.concat([df, encoded_df], axis=1)
-    
-    # Encode the other categorical features
-    df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
-    df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
-    df['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
-    df['Gender'] = encoder_Gender.transform(data['Gender'])
-    df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
-    df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
-    df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
-    
-    # PCA
+    # Handle NaNs in numerical columns *before* scaling
+    for col in pca_numerical_columns:
+        if data[col].isnull().any():
+            print(f"NaNs found in {col} before imputation.")
+            data[col] = data[col].fillna(data[col].mean())  # Or other imputation method
+            print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
+
+    # Scale numerical features
     data['Age_at_enrollment'] = scaler_Age_at_enrollment.transform(data[['Age_at_enrollment']])
     data['Curricular_units_1st_sem_approved'] = scaler_Curricular_units_1st_sem_approved.transform(data[['Curricular_units_1st_sem_approved']])
     data['Curricular_units_1st_sem_grade'] = scaler_Curricular_units_1st_sem_grade.transform(data[['Curricular_units_1st_sem_grade']])
@@ -73,14 +65,26 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(data[['Curricular_units_2nd_sem_grade']])
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(data[['Previous_qualification_grade']])
 
-    X_pca_input = data.loc[:, pca_1.feature_names_in_]
+    # One-hot encode the categorical features
+    encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
+    df_processed = pd.concat([df_processed, encoded_df], axis=1)
 
-    if X_pca_input.isnull().any().any():
-        X_pca_input = X_pca_input.dropna()
+    # Encode the other categorical features
+    df_processed['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
+    df_processed['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
+    df_processed['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
+    df_processed['Gender'] = encoder_Gender.transform(data['Gender'])
+    df_processed['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
+    df_processed['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
+    df_processed['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
+
+    # Create PCA input from the scaled data
+    X_pca_input = data[pca_1.feature_names_in_].copy()
 
     # Perform PCA
     pca_transformed = pca_1.transform(X_pca_input)
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
-    df = pd.concat([df, pca_df], axis=1)
-    
-    return df
+    df_processed = pd.concat([df_processed, pca_df], axis=1)
+
+    return df_processed
