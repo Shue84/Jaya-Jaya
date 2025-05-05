@@ -50,12 +50,18 @@ def data_preprocessing(data):
     data = data.copy()
     df_processed = pd.DataFrame()
 
+    print("--- Start of data_preprocessing ---")  # Overall entry point log
+    print("Initial data shape:", data.shape)
+    print("Initial NaNs:\n", data.isnull().sum())
+
     # Handle NaNs in numerical columns before scaling
     for col in pca_numerical_columns:
         if data[col].isnull().any():
             print(f"NaNs found in {col} before imputation.")
             data[col] = data[col].fillna(data[col].mean())
             print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
+        else:
+            print(f"No NaNs in {col} before imputation.")
 
     # Create a dictionary to hold the scalers
     scaler_dict = {
@@ -69,13 +75,29 @@ def data_preprocessing(data):
 
     # Scale numerical features
     for col in pca_numerical_columns:
-        print(f"NaNs in {col} before scaling: {data[col].isnull().sum()}")
-        # Reshape if it's a single value (shape (1,))
-        if data[col].shape == (1,):
-            data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
-        else:
+        print(f"--- Scaling column: {col} ---")
+        print("Data type before scaling:", data[col].dtype)
+        print("Shape before scaling:", data[col].shape)
+        print("NaNs before scaling:", data[col].isnull().sum())
+        print("Example values before scaling:\n", data[col].head(10))
+
+        # Even more robust shape handling
+        if len(data[col].shape) == 1:  # 1D array (Series)
+            if data[col].shape[0] == 1:  # Single value
+                data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
+            else:  # Multiple values in a Series
+                data[[col]] = scaler_dict[col].transform(data[[col]])
+        elif len(data[col].shape) == 2:  # 2D array (DataFrame)
             data[[col]] = scaler_dict[col].transform(data[[col]])
-        print(f"NaNs in {col} after scaling: {data[col].isnull().sum()}")
+        else:
+            print(f"Unexpected shape for {col}: {data[col].shape}. Skipping scaling.")
+            continue  # Skip scaling if shape is unexpected
+
+        print("Data type after scaling:", data[col].dtype)
+        print("Shape after scaling:", data[col].shape)
+        print("NaNs after scaling:", data[col].isnull().sum())
+        print("Example values after scaling:\n", data[col].head(10))
+        print("--- End scaling column: {col} ---")
         
     # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
@@ -93,12 +115,17 @@ def data_preprocessing(data):
 
     # Create PCA input from the scaled data
     X_pca_input = data[pca_1.feature_names_in_].copy()
-    
+
     # Perform PCA
+    print("--- Before PCA ---")
+    print("Shape of X_pca_input:", X_pca_input.shape)
+    print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
     pca_transformed = pca_1.transform(X_pca_input)
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
     df_processed = pd.concat([df_processed, pca_df], axis=1)
+    print("--- After PCA ---")
+    print("Shape of df_processed:", df_processed.shape)
+    print("NaNs in df_processed:\n", df_processed.isnull().sum())
 
-     # Final check for NaNs
-    print("NaNs in processed data:\n", df_processed.isnull().sum().sum())
+    print("--- End of data_preprocessing ---")  # Overall exit point log
     return df_processed
