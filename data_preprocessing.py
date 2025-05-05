@@ -124,11 +124,20 @@ def data_preprocessing(data):
     if extra_cols:
         print(f"Warning: Extra columns not used in PCA: {extra_cols}")
 
-    X_pca_input = data[expected_pca_features].astype(np.float64)
+    X_pca_input = data[pca_numerical_columns].copy()  # Create PCA input
+    print("--- Before PCA ---")
+    print("Shape of X_pca_input:", X_pca_input.shape)
+    print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
+
     pca_transformed = pca_1.transform(X_pca_input)
 
-    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']
+    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
-    df = pd.concat([df, pca_df], axis=1)
 
+    # Concatenate the DataFrames, excluding original PCA columns from 'data'
+    df = pd.concat([df, pca_df], axis=1)
+    df = df.drop(columns=pca_numerical_columns, errors='ignore')  # Drop original PCA columns
+
+    print("--- After PCA ---")
+    print("Shape of df:", df.shape)
     return df
