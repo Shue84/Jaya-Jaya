@@ -22,9 +22,8 @@ with col2:
 
 onehot_encoder = joblib.load('model/onehot_encoder.joblib')
 
-
-feature_names = onehot_encoder.get_feature_names_out('Marital_status', 'Previous_qualification', 'Course') # Use the correct order
-# This is the correct way to get the feature names.
+onehot_encoded_columns = ['Marital_status', 'Previous_qualification', 'Course']
+feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)
 
 
 marital_status_options = ['Single', 'Married',  'Widower', 'Divorced', 'Facto Union', 'Legally separated']
