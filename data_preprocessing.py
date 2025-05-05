@@ -50,7 +50,7 @@ def data_preprocessing(data):
 
     # One-hot encode the categorical features
     encoded_cols = onehot_encoder.transform(
-        data['Marital_status', 'Previous_qualification', 'Course'])
+        data[['Marital_status', 'Previous_qualification', 'Course']])
     encoded_df = pd.DataFrame(encoded_cols, index=data.index)
     df = pd.concat([df, encoded_df], axis=1)
 
