@@ -23,7 +23,7 @@ with col2:
 onehot_encoder = joblib.load('model/onehot_encoder.joblib')
 
 # 2. Get Feature Names (Correct Method)
-feature_names = onehot_encoder.get_feature_names_out(['Marital_status', 'Course', 'Previous_qualification'])
+feature_names = onehot_encoder.get_feature_names_out(['Marital_status', 'Previous_qualification', 'Course'])
 #This is the correct way to get the feature names.
 
 # 3. Define Original Categorical Values
