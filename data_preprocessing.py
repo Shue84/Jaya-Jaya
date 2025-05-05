@@ -54,20 +54,16 @@ def data_preprocessing(data):
     print("Initial data shape:", data.shape)
     print("Initial NaNs:\n", data.isnull().sum())
 
-    # Handle NaNs in numerical columns before scaling
+    # Handle NaNs in numerical columns
     for col in pca_numerical_columns:
         if data[col].isnull().any():
             print(f"NaNs found in {col} before imputation.")
-            # Impute with 0 if it's a single-row DataFrame, otherwise use the mean
-            if len(data) == 1:
-                data[col] = data[col].fillna(0)  # Or another appropriate default
-            else:
-                data[col] = data[col].fillna(data[col].mean())
+            data[col] = data[col].fillna(0 if len(data) == 1 else data[col].mean())
             print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
         else:
             print(f"No NaNs in {col} before imputation.")
 
-    # Create a dictionary to hold the scalers
+    # Scale numerical features
     scaler_dict = {
         'Age_at_enrollment': scaler_Age_at_enrollment,
         'Curricular_units_1st_sem_approved': scaler_Curricular_units_1st_sem_approved,
@@ -77,7 +73,6 @@ def data_preprocessing(data):
         'Previous_qualification_grade': scaler_Previous_qualification_grade,
     }
 
-    # Scale numerical features
     for col in pca_numerical_columns:
         print(f"--- Scaling column: {col} ---")
         print("Data type before scaling:", data[col].dtype)
@@ -85,13 +80,9 @@ def data_preprocessing(data):
         print("NaNs before scaling:", data[col].isnull().sum())
         print("Example values before scaling:\n", data[col].head(10))
 
-        # Even more robust shape handling
-        if len(data[col].shape) == 1:  # 1D array (Series)
-            if data[col].shape[0] == 1:  # Single value
-                data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
-            else:  # Multiple values in a Series
-                data[[col]] = scaler_dict[col].transform(data[[col]])
-        elif len(data[col].shape) == 2:  # 2D array (DataFrame)
+        if len(data[col].shape) == 1:
+            data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
+        elif len(data[col].shape) == 2:
             data[[col]] = scaler_dict[col].transform(data[[col]])
         else:
             print(f"Unexpected shape for {col}: {data[col].shape}. Skipping scaling.")
@@ -105,33 +96,25 @@ def data_preprocessing(data):
 
     # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
+    encoded_feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Get correct names!
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=encoded_feature_names)
     df_processed = pd.concat([df_processed, encoded_df], axis=1)
 
     # Encode other categorical features
-    df_processed['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
-    df_processed['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
-    df_processed['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
-    df_processed['Gender'] = encoder_Gender.transform(data['Gender'])
-    df_processed['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
-    df_processed['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
-    df_processed['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
+    for col in other_categorical_columns:
+        df_processed[col] = globals()[f'encoder_{col}'].transform(data[col])
 
-    # Create PCA input from the scaled data
-    X_pca_input = data[pca_1.feature_names_in_].copy()
-
-    # Perform PCA
+    # PCA
+    X_pca_input = data[pca_numerical_columns].copy()  # Use original column names for PCA input!
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
     pca_transformed = pca_1.transform(X_pca_input)
 
-    # Use a dynamic column list for pca_df
-    num_pca_components = pca_transformed.shape[1]
-    pca_columns = [f'PCA_{i+1}' for i in range(num_pca_components)]
+    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
-
     df_processed = pd.concat([df_processed, pca_df], axis=1)
+
     print("--- After PCA ---")
     print("Shape of df_processed:", df_processed.shape)
     print("NaNs in df_processed:\n", df_processed.isnull().sum())
