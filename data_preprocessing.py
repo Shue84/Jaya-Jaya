@@ -110,7 +110,14 @@ def data_preprocessing(data):
     if missing_cols:
         raise ValueError(f"Missing columns for PCA: {missing_cols}")
 
+    # Ensure PCA input columns are in the correct order and clean
     X_pca_input = data[pca_numerical_columns].copy()
+    X_pca_input = X_pca_input.astype(np.float64)  # Ensure correct dtype
+
+    # Match training time column order (just to be extra sure)
+    X_pca_input = X_pca_input[pca_numerical_columns]
+
+    # Apply PCA transformation
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
