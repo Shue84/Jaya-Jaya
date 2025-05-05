@@ -50,7 +50,7 @@ def data_preprocessing(data):
     data = data.copy()
     df_processed = pd.DataFrame()
 
-    print("--- Start of data_preprocessing ---")  # Overall entry point log
+    print("--- Start of data_preprocessing ---")
     print("Initial data shape:", data.shape)
     print("Initial NaNs:\n", data.isnull().sum())
 
@@ -58,7 +58,11 @@ def data_preprocessing(data):
     for col in pca_numerical_columns:
         if data[col].isnull().any():
             print(f"NaNs found in {col} before imputation.")
-            data[col] = data[col].fillna(data[col].mean())
+            # Impute with 0 if it's a single-row DataFrame, otherwise use the mean
+            if len(data) == 1:
+                data[col] = data[col].fillna(0)  # Or another appropriate default (e.g., median)
+            else:
+                data[col] = data[col].fillna(data[col].mean())
             print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
         else:
             print(f"No NaNs in {col} before imputation.")
@@ -91,14 +95,14 @@ def data_preprocessing(data):
             data[[col]] = scaler_dict[col].transform(data[[col]])
         else:
             print(f"Unexpected shape for {col}: {data[col].shape}. Skipping scaling.")
-            continue  # Skip scaling if shape is unexpected
+            continue
 
         print("Data type after scaling:", data[col].dtype)
         print("Shape after scaling:", data[col].shape)
         print("NaNs after scaling:", data[col].isnull().sum())
         print("Example values after scaling:\n", data[col].head(10))
         print("--- End scaling column: {col} ---")
-        
+
     # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
@@ -127,5 +131,5 @@ def data_preprocessing(data):
     print("Shape of df_processed:", df_processed.shape)
     print("NaNs in df_processed:\n", df_processed.isnull().sum())
 
-    print("--- End of data_preprocessing ---")  # Overall exit point log
+    print("--- End of data_preprocessing ---")
     return df_processed
