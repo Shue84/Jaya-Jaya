@@ -55,7 +55,7 @@ def data_preprocessing(data):
     df = pd.concat([df, encoded_df], axis=1)
 
     # Encode the other categorical features
-    df['Daytime/evening attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime/evening attendance'])
+    df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
     df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
     df['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
     df['Gender'] = encoder_Gender.transform(data['Gender'])
