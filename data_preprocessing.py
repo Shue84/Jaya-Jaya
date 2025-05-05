@@ -92,8 +92,17 @@ def data_preprocessing(data):
 
     # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
-    encoded_feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Get correct names!
+    encoded_feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=encoded_feature_names)
+
+    # Ensure all expected columns are present
+    for col in onehot_encoder.get_feature_names_out():
+        if col not in encoded_df.columns:
+            encoded_df[col] = 0  # add missing column
+
+    # Reorder columns to match training time
+    encoded_df = encoded_df[onehot_encoder.get_feature_names_out()]
+
     df = pd.concat([df, encoded_df], axis=1)
 
    # Encode the other categorical features
