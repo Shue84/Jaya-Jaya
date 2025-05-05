@@ -73,7 +73,8 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(data[['Curricular_units_2nd_sem_grade']])
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(data[['Previous_qualification_grade']])
 
-    X_pca_input = data[pca_1.feature_names_in_]
+    # Create PCA input from the *scaled* data
+    X_pca_input = data[pca_1.feature_names_in_].copy() # Use .copy() to avoid modifying the original data
 
     # Ensure all PCA input columns are numeric
     X_pca_input = X_pca_input.apply(pd.to_numeric, errors='coerce')
@@ -85,6 +86,8 @@ def data_preprocessing(data):
         print("NaNs after filling:", X_pca_input.isnull().sum())
 
     # Perform PCA
-    df[pca_numerical_columns] = pca_1.transform(X_pca_input)
-
+    pca_transformed = pca_1.transform(X_pca_input)
+    pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
+    df = pd.concat([df, pca_df], axis=1)
+    
     return df
