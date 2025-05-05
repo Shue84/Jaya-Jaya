@@ -36,6 +36,9 @@ pca_numerical_columns = [
     'Previous_qualification_grade'
 ]
 
+# Get the original order of the one-hot encoded columns
+original_ohe_columns = ['Course', 'Marital_status', 'Previous_qualification']
+
 def data_preprocessing(data):
     """Preprocessing data
 
@@ -48,10 +51,15 @@ def data_preprocessing(data):
     data = data.copy()
     df = pd.DataFrame()
 
-    # One-hot encode the categorical features
-    encoded_cols = onehot_encoder.transform(
-        data[['Course', 'Marital_status', 'Previous_qualification']])
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index)  # Important: Keep the index
+    # 1. Ensure correct columns and order for one-hot encoding
+    try:
+        encoded_cols = onehot_encoder.transform(data[original_ohe_columns])
+    except KeyError as e:
+        print(f"Error: Missing columns for one-hot encoding: {e}")
+        print(f"Input data columns: {data.columns}")
+        raise  # Re-raise the exception to stop processing
+        
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index)  
     df = pd.concat([df, encoded_df], axis=1)
 
     # Encode the other categorical features
