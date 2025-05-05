@@ -90,6 +90,13 @@ def data_preprocessing(data):
     # Create PCA input from the scaled data
     X_pca_input = data[pca_1.feature_names_in_].copy()
 
+    print("--- Debugging: Input to scaler.transform() ---")
+    print("Type of data['Age_at_enrollment']:", type(data['Age_at_enrollment']))
+    print("Shape of data['Age_at_enrollment']:", data['Age_at_enrollment'].shape)
+    print("NaNs in data['Age_at_enrollment'] before transform:", data['Age_at_enrollment'].isnull().sum())
+    print("Values in data['Age_at_enrollment'] (first 20):\n", data['Age_at_enrollment'].head(20))
+    print("-----------------------------------------------")
+    
     # Perform PCA
     pca_transformed = pca_1.transform(X_pca_input)
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
