@@ -72,12 +72,11 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_approved'] = scaler_Curricular_units_2nd_sem_approved.transform(np.asarray(data['Curricular_units_2nd_sem_approved']).reshape(-1,1))[0]
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(np.asarray(data['Curricular_units_2nd_sem_grade']).reshape(-1,1))[0]
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(np.asarray(data['Previous_qualification_grade']).reshape(-1,1))[0]
-    # Reorder and ensure correct PCA input columns
     X_pca_input = data.loc[:, pca_1.feature_names_in_]
 
-    # Check for NaNs before PCA
+    # Fill NaNs with column means
     if X_pca_input.isnull().any().any():
-        raise ValueError(f"PCA input contains NaNs:\n{X_pca_input.isnull().sum()}")
+        X_pca_input = X_pca_input.fillna(X_pca_input.mean())
 
     # Perform PCA
     df[pca_numerical_columns] = pca_1.transform(X_pca_input)
