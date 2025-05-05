@@ -69,10 +69,14 @@ def data_preprocessing(data):
 
     # Scale numerical features
     for col in pca_numerical_columns:
-        print(f"NaNs in {col} before scaling: {data[col].isnull().sum()}")  # Debugging
-        data[col] = scaler_dict[col].transform(data[[col]])
-        print(f"NaNs in {col} after scaling: {data[col].isnull().sum()}")   # Debugging
-
+        print(f"NaNs in {col} before scaling: {data[col].isnull().sum()}")
+        # Reshape if it's a single value (shape (1,))
+        if data[col].shape == (1,):
+            data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
+        else:
+            data[[col]] = scaler_dict[col].transform(data[[col]])
+        print(f"NaNs in {col} after scaling: {data[col].isnull().sum()}")
+        
     # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
@@ -89,13 +93,6 @@ def data_preprocessing(data):
 
     # Create PCA input from the scaled data
     X_pca_input = data[pca_1.feature_names_in_].copy()
-
-    print("--- Debugging: Input to scaler.transform() ---")
-    print("Type of data['Age_at_enrollment']:", type(data['Age_at_enrollment']))
-    print("Shape of data['Age_at_enrollment']:", data['Age_at_enrollment'].shape)
-    print("NaNs in data['Age_at_enrollment'] before transform:", data['Age_at_enrollment'].isnull().sum())
-    print("Values in data['Age_at_enrollment'] (first 20):\n", data['Age_at_enrollment'].head(20))
-    print("-----------------------------------------------")
     
     # Perform PCA
     pca_transformed = pca_1.transform(X_pca_input)
