@@ -101,6 +101,10 @@ def data_preprocessing(data):
     df_processed = pd.concat([df_processed, encoded_df], axis=1)
 
     # Encode other categorical features
+    other_categorical_columns = [  # Define it *here* within the function!
+        'Daytime_evening_attendance', 'Fathers_occupation', 'Fathers_qualification',
+        'Gender', 'Mothers_occupation', 'Mothers_qualification', 'Scholarship_holder'
+    ]
     for col in other_categorical_columns:
         df_processed[col] = globals()[f'encoder_{col}'].transform(data[col])
 
