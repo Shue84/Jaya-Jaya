@@ -103,7 +103,7 @@ def data_preprocessing(data):
     # Reorder columns to match training time
     encoded_df = encoded_df[encoded_feature_names]
 
-    df = pd.concat([df, encoded_df.reset_index(drop=True)], axis=1)
+    df = pd.concat([df, encoded_df], axis=1)
 
    # Encode the other categorical features
     df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
