@@ -118,6 +118,3 @@ def data_preprocessing(data):
     df = pd.concat([df, pca_df], axis=1)
 
     return df
-
-print("Expected PCA columns:", pca_numerical_columns)
-print("Actual columns:", list(X_pca_input.columns))
