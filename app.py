@@ -97,23 +97,23 @@ with col2:
 col1, col2 = st.columns(2)
 
 with col1:
-    Curriculum_units_1st_sem_approved = int(st.number_input(label='Curriculum_units_1st_sem_approved', value=0))
-    data["Curriculum_units_1st_sem_approved"] = Curriculum_units_1st_sem_approved
+    Curricular_units_1st_sem_approved = int(st.number_input(label='Curricular_units_1st_sem_approved', value=0))
+    data["Curricular_units_1st_sem_approved"] = Curricular_units_1st_sem_approved
 
 with col2:
-    Curriculum_units_2nd_sem_approved = int(st.number_input(label='Curriculum_units_2nd_sem_approved', value=0))
-    data["Curriculum_units_2nd_sem_approved"] = Curriculum_units_2nd_sem_approved
+    Curricular_units_2nd_sem_approved = int(st.number_input(label='Curricular_units_2nd_sem_approved', value=0))
+    data["Curricular_units_2nd_sem_approved"] = Curricular_units_2nd_sem_approved
 
 
 col1, col2 = st.columns(2)
 
 with col1:
-    Curriculum_units_1st_sem_grade = int(st.number_input(label='Curriculum_units_1st_sem_grade', value=0))
-    data["Curriculum_units_1st_sem_grade"] = Curriculum_units_1st_sem_grade
+    Curricular_units_1st_sem_grade = int(st.number_input(label='Curricular_units_1st_sem_grade', value=0))
+    data["Curricular_units_1st_sem_grade"] = Curricular_units_1st_sem_grade
 
 with col2:
-    Curriculum_units_2nd_sem_grade = int(st.number_input(label='Curriculum_units_2nd_sem_grade', value=0))
-    data["Curriculum_units_2nd_sem_grade"] = Curriculum_units_2nd_sem_grade
+    Curricular_units_2nd_sem_grade = int(st.number_input(label='Curricular_units_2nd_sem_grade', value=0))
+    data["Curricular_units_2nd_sem_grade"] = Curricular_units_2nd_sem_grade
 
 with st.expander("View the Raw Data"):
     st.dataframe(data=data, width=800, height=10)
