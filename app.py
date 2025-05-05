@@ -32,7 +32,7 @@ except AttributeError:
 # 3. Define Original Categorical Values
 marital_status_options = ['Single', 'Married',  'Widower', 'Divorced', 'Facto Union', 'Legally separated']
 course_options = ['33', '171', '8014', '9003', '9070', '9085', '9119', '9130', '9147', '9238', '9254', '9500', '9556', '9670', '9773' '9863', '9991']
-qualification_options = ['1', '2', '3', '4', '6', '9', '10', '12', '14', '15', '19', '38', '39', '40', '42', '43']
+qualification_options = ['1', '2', '3', '4', '5', '6', '9', '10', '12', '14', '15', '19', '38', '39', '40', '42', '43']
 data = pd.DataFrame()
 
 col1, col2, col3 = st.columns(3)
