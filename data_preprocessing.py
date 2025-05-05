@@ -51,21 +51,11 @@ def data_preprocessing(data):
     df = pd.DataFrame()
 
     # One-hot encode the categorical features
-    try:
-        encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
-        encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
-        df = pd.concat([df, encoded_df], axis=1)
-    except ValueError as e:
-        print(f"Error during one-hot encoding: {e}")
-        print("Data types of input data:")
-        print(data[onehot_encoded_columns].dtypes)
-        print("Expected data types:")
-        # You can access the expected data types from the encoder if it's stored there
-        # If not, you might need to hardcode them based on how the encoder was fit
-        expected_dtypes = ['object', 'object', 'object']  # Example: If these columns were strings
-        print(pd.Series(expected_dtypes, index=onehot_encoded_columns))
-        raise  # Re-raise the exception to stop processing
-
+    encoded_cols = onehot_encoder.transform(
+        data[onehot_encoded_columns])  # Use the correct order here
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out()) # added columns
+    df = pd.concat([df, encoded_df], axis=1)
+    
     # Encode the other categorical features
     df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
     df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
