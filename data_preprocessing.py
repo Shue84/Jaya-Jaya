@@ -53,7 +53,7 @@ def data_preprocessing(data):
     # One-hot encode the categorical features
     encoded_cols = onehot_encoder.transform(
         data[onehot_encoded_columns])  # Use the correct order here
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out(onehot_encoded_columns))  # added columns
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out()) # added columns
     df = pd.concat([df, encoded_df], axis=1)
 
     # Encode the other categorical features
