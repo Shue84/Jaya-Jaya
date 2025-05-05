@@ -37,6 +37,7 @@ pca_numerical_columns = [
 ]
 # Define the correct order of columns for one-hot encoding
 onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
+all_onehot_cols = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Store original columns
 
 def data_preprocessing(data):
     """Preprocessing data
@@ -90,19 +91,15 @@ def data_preprocessing(data):
         print("Example values after scaling:\n", data[col].head(10))
         print("--- End scaling column: {col} ---")
 
-    # One-hot encode categorical features
+   # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
-    encoded_feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=encoded_feature_names)
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out(onehot_encoded_columns))
 
-    # Ensure all expected columns are present
-    for col in onehot_encoder.get_feature_names_out():
+    # Ensure *all* original one-hot encoded columns are present, in the correct order
+    for col in all_onehot_cols:
         if col not in encoded_df.columns:
-            encoded_df[col] = 0  # add missing column
-
-    # Reorder columns to match training time
-    encoded_df = encoded_df[encoded_feature_names]
-
+            encoded_df[col] = 0  # Add missing column
+    encoded_df = encoded_df[all_onehot_cols]  # Reorder to match training
     df = pd.concat([df, encoded_df], axis=1)
 
    # Encode the other categorical features
