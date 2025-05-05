@@ -48,15 +48,19 @@ def data_preprocessing(data):
     data = data.copy()
     df = pd.DataFrame()
 
-    df['Course'] = encoder_Course.transform(data['Course'])
+    # One-hot encode the categorical features
+    encoded_cols = onehot_encoder.transform(
+        data[['Course', 'Marital_status', 'Previous_qualification']])
+    encoded_df = pd.DataFrame(encoded_cols, index=data.index)  # Important: Keep the index
+    df = pd.concat([df, encoded_df], axis=1)
+
+    # Encode the other categorical features
     df['Daytime/evening attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime/evening attendance'])
     df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
     df['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
     df['Gender'] = encoder_Gender.transform(data['Gender'])
-    df['Marital_status'] = encoder_Marital_status.transform(data['Marital_status'])
     df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
-    df['Previous_qualification'] = encoder_Previous_qualification.transform(data['Previous_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
     # PCA
