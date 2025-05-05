@@ -105,22 +105,20 @@ def data_preprocessing(data):
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
-   # Ensure columns are in the correct order and all exist
-    missing_cols = [col for col in pca_numerical_columns if col not in data.columns]
+   # PCA: ensure column names and order match exactly
+    expected_pca_features = pca_1.feature_names_in_
+    missing_cols = set(expected_pca_features) - set(data.columns)
+    extra_cols = set(data.columns) - set(expected_pca_features)
+
     if missing_cols:
         raise ValueError(f"Missing columns for PCA: {missing_cols}")
+    if extra_cols:
+        print(f"Warning: Extra columns not used in PCA: {extra_cols}")
 
-    # Ensure PCA input columns are in the correct order and clean
-    X_pca_input = data[pca_numerical_columns].copy()
-    X_pca_input = X_pca_input.astype(np.float64)  # Ensure correct dtype
-
-    # Match training time column order (just to be extra sure)
-    X_pca_input = X_pca_input[pca_numerical_columns]
-
-    # Apply PCA transformation
+    X_pca_input = data[expected_pca_features].astype(np.float64)
     pca_transformed = pca_1.transform(X_pca_input)
 
-    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
+    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
     df = pd.concat([df, pca_df], axis=1)
 
