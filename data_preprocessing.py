@@ -73,12 +73,13 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(np.asarray(data['Curricular_units_2nd_sem_grade']).reshape(-1,1))[0]
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(np.asarray(data['Previous_qualification_grade']).reshape(-1,1))[0]
     X_pca_input = data.loc[:, pca_1.feature_names_in_]
+    if list(X_pca_input.columns) != list(pca_1.feature_names_in_):
+        raise ValueError("Mismatch in PCA input columns...")
 
-    # Fill NaNs with column means
+    # Fill NaNs with mean values
     if X_pca_input.isnull().any().any():
         X_pca_input = X_pca_input.fillna(X_pca_input.mean())
 
-    # Perform PCA
     df[pca_numerical_columns] = pca_1.transform(X_pca_input)
 
     return df
