@@ -37,7 +37,7 @@ pca_numerical_columns = [
 ]
 
 # Get the original order of the one-hot encoded columns
-original_ohe_columns = ['Course', 'Marital_status', 'Previous_qualification']
+original_ohe_columns = ['Marital_status', 'Previous_qualification', 'Course']
 
 def data_preprocessing(data):
     """Preprocessing data
