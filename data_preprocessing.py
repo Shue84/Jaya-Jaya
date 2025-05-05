@@ -48,11 +48,7 @@ def data_preprocessing(data):
         Pandas DataFrame: Dataframe that contain all the preprocessed data
     """
     data = data.copy()
-    df_processed = pd.DataFrame()
-
-    print("--- Start of data_preprocessing ---")
-    print("Initial data shape:", data.shape)
-    print("Initial NaNs:\n", data.isnull().sum())
+    df = pd.DataFrame()
 
     # Handle NaNs in numerical columns
     for col in pca_numerical_columns:
@@ -98,15 +94,16 @@ def data_preprocessing(data):
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
     encoded_feature_names = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Get correct names!
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=encoded_feature_names)
-    df_processed = pd.concat([df_processed, encoded_df], axis=1)
+    df = pd.concat([df, encoded_df], axis=1)
 
-    # Encode other categorical features
-    other_categorical_columns = [  # Define it *here* within the function!
-        'Daytime_evening_attendance', 'Fathers_occupation', 'Fathers_qualification',
-        'Gender', 'Mothers_occupation', 'Mothers_qualification', 'Scholarship_holder'
-    ]
-    for col in other_categorical_columns:
-        df_processed[col] = globals()[f'encoder_{col}'].transform(data[col])
+   # Encode the other categorical features
+    df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
+    df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
+    df['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
+    df['Gender'] = encoder_Gender.transform(data['Gender'])
+    df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
+    df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
+    df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
     # PCA
     X_pca_input = data[pca_numerical_columns].copy()  # Use original column names for PCA input!
@@ -117,11 +114,11 @@ def data_preprocessing(data):
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
-    df_processed = pd.concat([df_processed, pca_df], axis=1)
+    df = pd.concat([df_processed, pca_df], axis=1)
 
     print("--- After PCA ---")
-    print("Shape of df_processed:", df_processed.shape)
-    print("NaNs in df_processed:\n", df_processed.isnull().sum())
+    print("Shape of df:", df.shape)
+    print("NaNs in df:\n", df.isnull().sum())
 
     print("--- End of data_preprocessing ---")
-    return df_processed
+    return df
