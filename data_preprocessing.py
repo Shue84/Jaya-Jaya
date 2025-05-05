@@ -48,29 +48,37 @@ def data_preprocessing(data):
         Pandas DataFrame: Dataframe that contain all the preprocessed data
     """
     data = data.copy()
-    df_processed = pd.DataFrame()  # Use a different name to avoid shadowing
+    df_processed = pd.DataFrame()
 
-    # Handle NaNs in numerical columns *before* scaling
+    # Handle NaNs in numerical columns before scaling
     for col in pca_numerical_columns:
         if data[col].isnull().any():
             print(f"NaNs found in {col} before imputation.")
-            data[col] = data[col].fillna(data[col].mean())  # Or other imputation method
+            data[col] = data[col].fillna(data[col].mean())
             print(f"NaNs in {col} after imputation: {data[col].isnull().sum()}")
 
-    # Scale numerical features
-    data['Age_at_enrollment'] = scaler_Age_at_enrollment.transform(data[['Age_at_enrollment']])
-    data['Curricular_units_1st_sem_approved'] = scaler_Curricular_units_1st_sem_approved.transform(data[['Curricular_units_1st_sem_approved']])
-    data['Curricular_units_1st_sem_grade'] = scaler_Curricular_units_1st_sem_grade.transform(data[['Curricular_units_1st_sem_grade']])
-    data['Curricular_units_2nd_sem_approved'] = scaler_Curricular_units_2nd_sem_approved.transform(data[['Curricular_units_2nd_sem_approved']])
-    data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(data[['Curricular_units_2nd_sem_grade']])
-    data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(data[['Previous_qualification_grade']])
+    # Create a dictionary to hold the scalers
+    scaler_dict = {
+        'Age_at_enrollment': scaler_Age_at_enrollment,
+        'Curricular_units_1st_sem_approved': scaler_Curricular_units_1st_sem_approved,
+        'Curricular_units_1st_sem_grade': scaler_Curricular_units_1st_sem_grade,
+        'Curricular_units_2nd_sem_approved': scaler_Curricular_units_2nd_sem_approved,
+        'Curricular_units_2nd_sem_grade': scaler_Curricular_units_2nd_sem_grade,
+        'Previous_qualification_grade': scaler_Previous_qualification_grade,
+    }
 
-    # One-hot encode the categorical features
+    # Scale numerical features
+    for col in pca_numerical_columns:
+        print(f"NaNs in {col} before scaling: {data[col].isnull().sum()}")  # Debugging
+        data[col] = scaler_dict[col].transform(data[[col]])
+        print(f"NaNs in {col} after scaling: {data[col].isnull().sum()}")   # Debugging
+
+    # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out())
     df_processed = pd.concat([df_processed, encoded_df], axis=1)
 
-    # Encode the other categorical features
+    # Encode other categorical features
     df_processed['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
     df_processed['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
     df_processed['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
@@ -87,4 +95,6 @@ def data_preprocessing(data):
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_numerical_columns)
     df_processed = pd.concat([df_processed, pca_df], axis=1)
 
+     # Final check for NaNs
+    print("NaNs in processed data:\n", df_processed.isnull().sum().sum())
     return df_processed
