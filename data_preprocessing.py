@@ -114,7 +114,7 @@ def data_preprocessing(data):
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
-    df = pd.concat([df_processed, pca_df], axis=1)
+    df = pd.concat([df, pca_df], axis=1)
 
     print("--- After PCA ---")
     print("Shape of df:", df.shape)
