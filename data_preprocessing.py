@@ -36,7 +36,7 @@ pca_numerical_columns = [
     'Previous_qualification_grade'
 ]
 # Define the correct order of columns for one-hot encoding
-onehot_encoded_columns = ['Marital_status', 'Previous_qualification', 'Course']
+onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
 
 def data_preprocessing(data):
     """Preprocessing data
