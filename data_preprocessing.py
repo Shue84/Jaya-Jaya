@@ -36,9 +36,6 @@ pca_numerical_columns = [
     'Previous_qualification_grade'
 ]
 
-# Get the original order of the one-hot encoded columns
-original_ohe_columns = ['Marital_status', 'Previous_qualification', 'Course']
-
 def data_preprocessing(data):
     """Preprocessing data
 
