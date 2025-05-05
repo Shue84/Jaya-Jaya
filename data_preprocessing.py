@@ -107,18 +107,11 @@ def data_preprocessing(data):
 
     # PCA
     X_pca_input = data[pca_numerical_columns].copy()  # Use original column names for PCA input!
-    print("--- Before PCA ---")
-    print("Shape of X_pca_input:", X_pca_input.shape)
-    print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
+    X_pca_input = X_pca_input[pca_numerical_columns]
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
     df = pd.concat([df, pca_df], axis=1)
 
-    print("--- After PCA ---")
-    print("Shape of df:", df.shape)
-    print("NaNs in df:\n", df.isnull().sum())
-
-    print("--- End of data_preprocessing ---")
     return df
