@@ -72,6 +72,6 @@ def data_preprocessing(data):
     data['Curricular_units_2nd_sem_approved'] = scaler_Curricular_units_2nd_sem_approved.transform(np.asarray(data['Curricular_units_2nd_sem_approved']).reshape(-1,1))[0]
     data['Curricular_units_2nd_sem_grade'] = scaler_Curricular_units_2nd_sem_grade.transform(np.asarray(data['Curricular_units_2nd_sem_grade']).reshape(-1,1))[0]
     data['Previous_qualification_grade'] = scaler_Previous_qualification_grade.transform(np.asarray(data['Previous_qualification_grade']).reshape(-1,1))[0]
-    df[['pc1_1', 'pc1_2', 'pc1_3']] = pca_1.transform(data[pca_numerical_columns])
+    df[pca_numerical_columns] = pca_1.transform(data[pca_numerical_columns])
 
     return df
