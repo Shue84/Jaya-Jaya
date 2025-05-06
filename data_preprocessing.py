@@ -70,6 +70,7 @@ def data_preprocessing(data):
         'Previous_qualification_grade': scaler_Previous_qualification_grade,
     }
 
+    scaled_data = data[pca_numerical_columns].copy()
     for col in pca_numerical_columns:
         print(f"--- Scaling column: {col} ---")
         print("Data type before scaling:", data[col].dtype)
@@ -93,7 +94,7 @@ def data_preprocessing(data):
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
-    df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=pca_numerical_columns + onehot_encoded_cols)], axis=1)
+   df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=onehot_encoded_cols + pca_numerical_columns)], axis=1)
     
     print("--- After One-Hot Encoding ---")
     print("Shape after encoding:", data.shape)
