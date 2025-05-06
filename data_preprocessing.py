@@ -35,9 +35,7 @@ pca_numerical_columns = [
     'Curricular_units_2nd_sem_grade',
     'Previous_qualification_grade'
 ]
-# Define the correct order of columns for one-hot encoding
-onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
-all_onehot_cols = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Store original columns
+
 expected_pca_features = pca_1.feature_names_in_ #Store original PCA features
 
 def data_preprocessing(data):
@@ -101,22 +99,13 @@ def data_preprocessing(data):
     print("Columns before encoding:\n", data.columns)
 
    # One-hot encode categorical features
-    encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
-    encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out(onehot_encoded_columns))
+    encoded_data = onehot_encoder.transform(data[['Marital_status', 'Course', 'Previous_qualification']])
+    encoded_feature_names = onehot_encoder.get_feature_names_out(['Marital_status', 'Course', 'Previous_qualification'])
+    encoded_df = pd.DataFrame(encoded_data, columns=encoded_feature_names, index=data.index)
 
     print("--- After Initial One-Hot Encoding ---")
     print("Shape after initial encoding:", encoded_df.shape)
     print("Columns after initial encoding:\n", encoded_df.columns)
-
-    # Ensure *all* original one-hot encoded columns are present, in the correct order
-    for col in all_onehot_cols:
-        if col not in encoded_df.columns:
-            encoded_df[col] = 0  # Add missing column
-    encoded_df = encoded_df[all_onehot_cols]  # Reorder to match training
-
-    print("--- After Ensuring All One-Hot Columns ---")
-    print("Shape after ensuring all columns:", encoded_df.shape)
-    print("Columns after ensuring all columns:\n", encoded_df.columns)
     
     df = pd.concat([df, encoded_df], axis=1)
 
