@@ -36,7 +36,8 @@ pca_numerical_columns = [
     'Previous_qualification_grade'
 ]
 
-expected_pca_features = pca_1.feature_names_in_ #Store original PCA features
+# Define the correct order of columns for one-hot encoding
+onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
 
 def data_preprocessing(data):
     """Preprocessing data
@@ -49,10 +50,6 @@ def data_preprocessing(data):
     """
     data = data.copy()
     df = pd.DataFrame()
-
-    print("--- Initial Data Info ---")
-    print("Data shape:", data.shape)
-    print("Data columns:\n", data.columns)
 
     # Handle NaNs in numerical columns
     for col in pca_numerical_columns:
@@ -78,25 +75,26 @@ def data_preprocessing(data):
         print("Data type before scaling:", data[col].dtype)
         print("Shape before scaling:", data[col].shape)
         print("NaNs before scaling:", data[col].isnull().sum())
-        print("Example values before scaling:\n", data[col].head(10))
-
-        if len(data[col].shape) == 1:
-            data[[col]] = scaler_dict[col].transform(np.array(data[col]).reshape(-1, 1))
-        elif len(data[col].shape) == 2:
-            data[[col]] = scaler_dict[col].transform(data[[col]])
-        else:
-            print(f"Unexpected shape for {col}: {data[col].shape}. Skipping scaling.")
-            continue
-
+        print("Example values before scaling:\n", data[col].head())
+        data[col] = scaler_dict[col].transform(data[[col]])
         print("Data type after scaling:", data[col].dtype)
         print("Shape after scaling:", data[col].shape)
         print("NaNs after scaling:", data[col].isnull().sum())
         print("--- End scaling column: {col} ---")
 
-    # One-hot encode categorical features
+    # One-hot encode specified categorical columns
     print("--- Before One-Hot Encoding ---")
     print("Shape before encoding:", data.shape)
     print("Columns before encoding:\n", data.columns)
+    data = pd.get_dummies(data, columns=onehot_encoded_columns, dummy_na=False)
+    print("--- After Initial One-Hot Encoding ---")
+    print("Shape after initial encoding:", data.shape)
+    print("Columns after initial encoding:\n", data.columns)
+
+    df = pd.concat([df, data], axis=1)
+    print("--- After Concatenating One-Hot ---")
+    print("Shape after concatenating:", df.shape)
+    print("Columns after concatenating:\n", df.columns)
 
    # One-hot encode categorical features
     encoded_data = onehot_encoder.transform(data[['Marital_status', 'Course', 'Previous_qualification']])
@@ -122,14 +120,9 @@ def data_preprocessing(data):
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
-    print("--- After Other Categorical Encoding ---")
-    print("Shape after other encoding:", df.shape)
-    print("Columns after other encoding:\n", df.columns)
 
-   # PCA: ensure column names and order match exactly
-    print("Expected PCA features:", expected_pca_features)
-    print("Data columns before PCA:\n", data.columns)
-    
+    # PCA: ensure column names and order match exactly
+    expected_pca_features = pca_1.feature_names_in_
     missing_cols = set(expected_pca_features) - set(data.columns)
     extra_cols = set(data.columns) - set(expected_pca_features)
 
@@ -142,23 +135,46 @@ def data_preprocessing(data):
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
-    print("PCA input columns:\n", X_pca_input.columns)
 
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
 
-    print("--- After PCA ---")
-    print("Shape of pca_df:", pca_df.shape)
-    print("PCA output columns:\n", pca_df.columns)
-
     # Concatenate the DataFrames, excluding original PCA columns from 'data'
     df = pd.concat([df, pca_df], axis=1)
-    df = df.drop(columns=pca_numerical_columns, errors='ignore')  # Drop original PCA columns
+    df = df.drop(columns=pca_numerical_columns)
 
-    print("--- Final Data Info ---")
+    print("--- After Other Categorical Encoding ---")
+    print("Shape after other encoding:", df.shape)
+    print("Columns after other encoding:\n", df.columns)
+
+    # Ensure the column order matches the training data
+    correct_column_order = [
+        'Daytime_evening_attendance', 'Previous_qualification_grade',
+        'Mothers_qualification', 'Fathers_qualification', 'Mothers_occupation',
+        'Fathers_occupation', 'Gender', 'Scholarship_holder',
+        'Age_at_enrollment', 'Curricular_units_1st_sem_approved',
+        'Curricular_units_1st_sem_grade', 'Curricular_units_2nd_sem_approved',
+        'Curricular_units_2nd_sem_grade', 'Marital_status_1',
+        'Marital_status_2', 'Marital_status_3', 'Marital_status_4',
+        'Marital_status_5', 'Marital_status_6', 'Previous_qualification_1',
+        'Previous_qualification_2', 'Previous_qualification_3',
+        'Previous_qualification_4', 'Previous_qualification_5',
+        'Previous_qualification_6', 'Previous_qualification_9',
+        'Previous_qualification_10', 'Previous_qualification_12',
+        'Previous_qualification_14', 'Previous_qualification_15',
+        'Previous_qualification_19', 'Previous_qualification_38',
+        'Previous_qualification_39', 'Previous_qualification_40',
+        'Previous_qualification_42', 'Previous_qualification_43', 'Course_33',
+        'Course_171', 'Course_8014', 'Course_9003', 'Course_9070',
+        'Course_9085', 'Course_9119', 'Course_9130', 'Course_9147',
+        'Course_9238', 'Course_9254', 'Course_9500', 'Course_9556',
+        'Course_9670', 'Course_9773', 'Course_9853', 'Course_9991', 'pc1_1', 'pc1_2', 'pc1_3'
+    ]
+    df = df.reindex(columns=correct_column_order)
+
+    print("--- Final Data Info (after reindexing) ---")
     print("Shape of df:", df.shape)
     print("Final data columns:\n", df.columns)
-
     return df
