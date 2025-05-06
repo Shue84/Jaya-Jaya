@@ -149,7 +149,7 @@ def data_preprocessing(data):
     if extra_cols:
         print(f"Warning: Extra columns not used in PCA: {extra_cols}")
 
-    X_pca_input = data[pca_numerical_columns].copy()  # Create PCA input
+    X_pca_input = data[expected_pca_features].copy()
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
