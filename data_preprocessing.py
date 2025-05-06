@@ -113,7 +113,7 @@ def data_preprocessing(data):
     expected_pca_features = list(pca_1.feature_names_in_)
 
     # Ensure all expected PCA input features are present
-    missing_cols_pca = [col for col in expected_pca_features if col not in df.columns]
+    missing_cols_pca = [col for col in expected_pca_features if col not in df_processed.columns]
     if missing_cols_pca:
         raise ValueError(f"Missing columns for PCA: {missing_cols_pca}")
 
