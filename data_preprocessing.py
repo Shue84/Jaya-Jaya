@@ -138,7 +138,6 @@ def data_preprocessing(data):
     print("Columns after other encoding:\n", df.columns)
 
    # PCA: ensure column names and order match exactly
-    expected_pca_features = pca_1.feature_names_in_
     print("Expected PCA features:", expected_pca_features)
     print("Data columns before PCA:\n", data.columns)
     
