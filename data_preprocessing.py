@@ -99,11 +99,6 @@ def data_preprocessing(data):
     print("Shape after encoding:", data.shape)
     print("Columns after encoding:\n", data.columns)
 
-    df = pd.concat([df, data], axis=1)
-    print("--- After Concatenating One-Hot ---")
-    print("Shape after concatenating:", df.shape)
-    print("Columns after concatenating:\n", df.columns)
-
    # Encode the other categorical features
     df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
     df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
@@ -131,9 +126,9 @@ def data_preprocessing(data):
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
-    pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
+    pca_df = pd.DataFrame(pca_transformed, index=df.index, columns=pca_columns)
 
-    # Concatenate the DataFrames, excluding original PCA columns from 'data'
+    # Concatenate the DataFrames, excluding original PCA columns from 'df'
     df = pd.concat([df, pca_df], axis=1)
     df = df.drop(columns=pca_numerical_columns)
 
