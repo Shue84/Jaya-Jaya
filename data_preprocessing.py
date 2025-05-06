@@ -108,6 +108,8 @@ def data_preprocessing(data):
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
+    df = df.reset_index(drop=True)
+    
     # PCA: ensure column names and order match exactly
     expected_pca_features = pca_1.feature_names_in_
     missing_cols = set(expected_pca_features) - set(data.columns)
