@@ -8,6 +8,7 @@ Original file is located at
 """
 
 import joblib
+import pandas as pd
 
 model = joblib.load('model/gboost_model.joblib')
 result_target = joblib.load('model/encoder_target.joblib')
@@ -21,6 +22,8 @@ def prediction(data):
     Returns:
         str: Prediction result (Enrolled, Graduate, or Dropout)
     """
+    print("--- Features received by prediction function ---")
+    print(data.columns)
     result = model.predict(data)
     final_result = result_target.inverse_transform(result)[0]
     return final_result
