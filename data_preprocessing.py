@@ -38,6 +38,7 @@ pca_numerical_columns = [
 # Define the correct order of columns for one-hot encoding
 onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
 all_onehot_cols = onehot_encoder.get_feature_names_out(onehot_encoded_columns)  # Store original columns
+expected_pca_features = pca_1.feature_names_in_ #Store original PCA features
 
 def data_preprocessing(data):
     """Preprocessing data
@@ -50,6 +51,10 @@ def data_preprocessing(data):
     """
     data = data.copy()
     df = pd.DataFrame()
+
+    print("--- Initial Data Info ---")
+    print("Data shape:", data.shape)
+    print("Data columns:\n", data.columns)
 
     # Handle NaNs in numerical columns
     for col in pca_numerical_columns:
@@ -88,19 +93,36 @@ def data_preprocessing(data):
         print("Data type after scaling:", data[col].dtype)
         print("Shape after scaling:", data[col].shape)
         print("NaNs after scaling:", data[col].isnull().sum())
-        print("Example values after scaling:\n", data[col].head(10))
         print("--- End scaling column: {col} ---")
+
+    # One-hot encode categorical features
+    print("--- Before One-Hot Encoding ---")
+    print("Shape before encoding:", data.shape)
+    print("Columns before encoding:\n", data.columns)
 
    # One-hot encode categorical features
     encoded_cols = onehot_encoder.transform(data[onehot_encoded_columns])
     encoded_df = pd.DataFrame(encoded_cols, index=data.index, columns=onehot_encoder.get_feature_names_out(onehot_encoded_columns))
+
+    print("--- After Initial One-Hot Encoding ---")
+    print("Shape after initial encoding:", encoded_df.shape)
+    print("Columns after initial encoding:\n", encoded_df.columns)
 
     # Ensure *all* original one-hot encoded columns are present, in the correct order
     for col in all_onehot_cols:
         if col not in encoded_df.columns:
             encoded_df[col] = 0  # Add missing column
     encoded_df = encoded_df[all_onehot_cols]  # Reorder to match training
+
+    print("--- After Ensuring All One-Hot Columns ---")
+    print("Shape after ensuring all columns:", encoded_df.shape)
+    print("Columns after ensuring all columns:\n", encoded_df.columns)
+    
     df = pd.concat([df, encoded_df], axis=1)
+
+    print("--- After Concatenating One-Hot ---")
+    print("Shape after concatenating:", df.shape)
+    print("Columns after concatenating:\n", df.columns)
 
    # Encode the other categorical features
     df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
@@ -111,8 +133,15 @@ def data_preprocessing(data):
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
 
+    print("--- After Other Categorical Encoding ---")
+    print("Shape after other encoding:", df.shape)
+    print("Columns after other encoding:\n", df.columns)
+
    # PCA: ensure column names and order match exactly
     expected_pca_features = pca_1.feature_names_in_
+    print("Expected PCA features:", expected_pca_features)
+    print("Data columns before PCA:\n", data.columns)
+    
     missing_cols = set(expected_pca_features) - set(data.columns)
     extra_cols = set(data.columns) - set(expected_pca_features)
 
@@ -125,16 +154,23 @@ def data_preprocessing(data):
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
+    print("PCA input columns:\n", X_pca_input.columns)
 
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
     pca_df = pd.DataFrame(pca_transformed, index=data.index, columns=pca_columns)
 
+    print("--- After PCA ---")
+    print("Shape of pca_df:", pca_df.shape)
+    print("PCA output columns:\n", pca_df.columns)
+
     # Concatenate the DataFrames, excluding original PCA columns from 'data'
     df = pd.concat([df, pca_df], axis=1)
     df = df.drop(columns=pca_numerical_columns, errors='ignore')  # Drop original PCA columns
 
-    print("--- After PCA ---")
+    print("--- Final Data Info ---")
     print("Shape of df:", df.shape)
+    print("Final data columns:\n", df.columns)
+    
     return df
