@@ -49,7 +49,7 @@ def data_preprocessing(data):
         Pandas DataFrame: Dataframe that contain all the preprocessed data
     """
     data = data.copy()
-    df = pd.DataFrame()
+    df_processed = pd.DataFrame()
 
     # Handle NaNs in numerical columns
     for col in pca_numerical_columns:
@@ -77,7 +77,7 @@ def data_preprocessing(data):
         print("Shape before scaling:", data[col].shape)
         print("NaNs before scaling:", data[col].isnull().sum())
         print("Example values before scaling:\n", data[col].head())
-        data[col] = scaler_dict[col].transform(data[[col]])
+        scaled_data[col] = scaler_dict[col].transform(scaled_data[[col]])
         print("Data type after scaling:", data[col].dtype)
         print("Shape after scaling:", data[col].shape)
         print("NaNs after scaling:", data[col].isnull().sum())
@@ -94,7 +94,7 @@ def data_preprocessing(data):
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
-    df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=onehot_encoded_cols + pca_numerical_columns)], axis=1)
+    df_processed = pd.concat([data.drop(columns=onehot_encoded_cols), encoded_df], axis=1)
     
     print("--- After One-Hot Encoding ---")
     print("Shape after encoding:", data.shape)
@@ -129,7 +129,7 @@ def data_preprocessing(data):
 
     # Concatenate the DataFrames, excluding original PCA columns from 'df'
     df_processed = pd.concat([df_processed, pca_df], axis=1)
-    df_processed = df_processed.drop(columns=expected_pca_features, errors='ignore')
+    df_processed = df_processed.drop(columns=pca_numerical_columns, errors='ignore')
 
     print("--- After Other Categorical Encoding ---")
     print("Shape after other encoding:", df_processed.shape)
