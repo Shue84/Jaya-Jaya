@@ -37,7 +37,7 @@ pca_numerical_columns = [
 ]
 
 # Define the correct order of columns for one-hot encoding
-onehot_encoded_columns = ['Marital_status', 'Course', 'Previous_qualification']
+onehot_encoded_cols = ['Marital_status', 'Course', 'Previous_qualification']
 
 def data_preprocessing(data):
     """Preprocessing data
@@ -86,27 +86,20 @@ def data_preprocessing(data):
     print("--- Before One-Hot Encoding ---")
     print("Shape before encoding:", data.shape)
     print("Columns before encoding:\n", data.columns)
-    data = pd.get_dummies(data, columns=onehot_encoded_columns, dummy_na=False)
-    print("--- After Initial One-Hot Encoding ---")
-    print("Shape after initial encoding:", data.shape)
-    print("Columns after initial encoding:\n", data.columns)
-
-    df = pd.concat([df, data], axis=1)
-    print("--- After Concatenating One-Hot ---")
-    print("Shape after concatenating:", df.shape)
-    print("Columns after concatenating:\n", df.columns)
 
    # One-hot encode categorical features
-    encoded_data = onehot_encoder.transform(data[['Marital_status', 'Course', 'Previous_qualification']])
-    encoded_feature_names = onehot_encoder.get_feature_names_out(['Marital_status', 'Course', 'Previous_qualification'])
-    encoded_df = pd.DataFrame(encoded_data, columns=encoded_feature_names, index=data.index)
+    encoded_data = onehot_encoder.transform(data[onehot_encode_cols])
+    encoded_cols = onehot_encoder.get_feature_names_out(onehot_encode_cols)
+    encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
-    print("--- After Initial One-Hot Encoding ---")
-    print("Shape after initial encoding:", encoded_df.shape)
-    print("Columns after initial encoding:\n", encoded_df.columns)
-    
-    df = pd.concat([df, encoded_df], axis=1)
+    # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
+    data = pd.concat([data.drop(columns=onehot_encode_cols), encoded_df], axis=1)
 
+    print("--- After One-Hot Encoding ---")
+    print("Shape after encoding:", data.shape)
+    print("Columns after encoding:\n", data.columns)
+
+    df = pd.concat([df, data], axis=1)
     print("--- After Concatenating One-Hot ---")
     print("Shape after concatenating:", df.shape)
     print("Columns after concatenating:\n", df.columns)
@@ -119,7 +112,6 @@ def data_preprocessing(data):
     df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
-
 
     # PCA: ensure column names and order match exactly
     expected_pca_features = pca_1.feature_names_in_
