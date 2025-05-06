@@ -72,21 +72,7 @@ def data_preprocessing(data):
 
     scaled_data = data[pca_numerical_columns].copy()
     for col in pca_numerical_columns:
-        print(f"--- Scaling column: {col} ---")
-        print("Data type before scaling:", data[col].dtype)
-        print("Shape before scaling:", data[col].shape)
-        print("NaNs before scaling:", data[col].isnull().sum())
-        print("Example values before scaling:\n", data[col].head())
         scaled_data[col] = scaler_dict[col].transform(scaled_data[[col]])
-        print("Data type after scaling:", data[col].dtype)
-        print("Shape after scaling:", data[col].shape)
-        print("NaNs after scaling:", data[col].isnull().sum())
-        print("--- End scaling column: {col} ---")
-
-    # One-hot encode specified categorical columns
-    print("--- Before One-Hot Encoding ---")
-    print("Shape before encoding:", data.shape)
-    print("Columns before encoding:\n", data.columns)
 
    # One-hot encode categorical features
     encoded_data = onehot_encoder.transform(data[onehot_encoded_cols])
@@ -95,10 +81,6 @@ def data_preprocessing(data):
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
     df_processed = pd.concat([data.drop(columns=onehot_encoded_cols), encoded_df], axis=1)
-    
-    print("--- After One-Hot Encoding ---")
-    print("Shape after encoding:", data.shape)
-    print("Columns after encoding:\n", data.columns)
 
    # Encode the other categorical features
     df_processed['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(df_processed['Daytime_evening_attendance'])
@@ -118,10 +100,6 @@ def data_preprocessing(data):
         raise ValueError(f"Missing columns for PCA: {missing_cols_pca}")
 
     X_pca_input = df_processed[expected_pca_features].copy()
-    print("--- Before PCA ---")
-    print("Shape of X_pca_input:", X_pca_input.shape)
-    print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
-
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']
@@ -130,10 +108,6 @@ def data_preprocessing(data):
     # Concatenate the DataFrames, excluding original PCA columns from 'df'
     df_processed = pd.concat([df_processed, pca_df], axis=1)
     df_processed = df_processed.drop(columns=pca_numerical_columns, errors='ignore')
-
-    print("--- After Other Categorical Encoding ---")
-    print("Shape after other encoding:", df_processed.shape)
-    print("Columns after other encoding:\n", df_processed.columns)
 
     # Ensure the column order matches the training data
     correct_column_order = [
