@@ -111,26 +111,19 @@ def data_preprocessing(data):
 
     # Ensure the column order matches the training data
     correct_column_order = [
-        'Daytime_evening_attendance', 'Previous_qualification_grade',
-        'Mothers_qualification', 'Fathers_qualification', 'Mothers_occupation',
-        'Fathers_occupation', 'Gender', 'Scholarship_holder',
-        'Age_at_enrollment', 'Curricular_units_1st_sem_approved',
-        'Curricular_units_1st_sem_grade', 'Curricular_units_2nd_sem_approved',
-        'Curricular_units_2nd_sem_grade', 'Marital_status_1',
-        'Marital_status_2', 'Marital_status_3', 'Marital_status_4',
+        'Daytime_evening_attendance', 'Mothers_qualification', 'Fathers_qualification',
+        'Mothers_occupation', 'Fathers_occupation', 'Gender', 'Scholarship_holder',
+        'Marital_status_1', 'Marital_status_2', 'Marital_status_3', 'Marital_status_4',
         'Marital_status_5', 'Marital_status_6', 'Previous_qualification_1',
-        'Previous_qualification_2', 'Previous_qualification_3',
-        'Previous_qualification_4', 'Previous_qualification_5',
-        'Previous_qualification_6', 'Previous_qualification_9',
-        'Previous_qualification_10', 'Previous_qualification_12',
-        'Previous_qualification_14', 'Previous_qualification_15',
-        'Previous_qualification_19', 'Previous_qualification_38',
-        'Previous_qualification_39', 'Previous_qualification_40',
-        'Previous_qualification_42', 'Previous_qualification_43', 'Course_33',
-        'Course_171', 'Course_8014', 'Course_9003', 'Course_9070',
-        'Course_9085', 'Course_9119', 'Course_9130', 'Course_9147',
-        'Course_9238', 'Course_9254', 'Course_9500', 'Course_9556',
-        'Course_9670', 'Course_9773', 'Course_9853', 'Course_9991', 'pc1_1', 'pc1_2', 'pc1_3'
+        'Previous_qualification_2', 'Previous_qualification_3', 'Previous_qualification_4',
+        'Previous_qualification_5', 'Previous_qualification_6', 'Previous_qualification_9',
+        'Previous_qualification_10', 'Previous_qualification_12', 'Previous_qualification_14',
+        'Previous_qualification_15', 'Previous_qualification_19', 'Previous_qualification_38',
+        'Previous_qualification_39', 'Previous_qualification_40', 'Previous_qualification_42',
+        'Previous_qualification_43', 'Course_33', 'Course_171', 'Course_8014', 'Course_9003',
+        'Course_9070', 'Course_9085', 'Course_9119', 'Course_9130', 'Course_9147', 'Course_9238',
+        'Course_9254', 'Course_9500', 'Course_9556', 'Course_9670', 'Course_9773', 'Course_9853',
+        'Course_9991', 'pc1_1', 'pc1_2', 'pc1_3'
     ]
     df_processed = df_processed.reindex(columns=correct_column_order)
 
