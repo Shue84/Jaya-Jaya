@@ -93,7 +93,7 @@ def data_preprocessing(data):
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
-    data = pd.concat([data.drop(columns=onehot_encoded_cols), encoded_df], axis=1)
+    df = pd.concat([data.drop(columns=onehot_encoded_cols), encoded_df], axis=1)
 
     print("--- After One-Hot Encoding ---")
     print("Shape after encoding:", data.shape)
@@ -107,32 +107,28 @@ def data_preprocessing(data):
     df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
     df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
     df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
-
-    df = df.reset_index(drop=True)
     
-    # PCA: ensure column names and order match exactly
-    expected_pca_features = pca_1.feature_names_in_
-    missing_cols = set(expected_pca_features) - set(data.columns)
-    extra_cols = set(data.columns) - set(expected_pca_features)
+   # Get the expected PCA input features
+    expected_pca_features = list(pca_1.feature_names_in_)
 
-    if missing_cols:
-        raise ValueError(f"Missing columns for PCA: {missing_cols}")
-    if extra_cols:
-        print(f"Warning: Extra columns not used in PCA: {extra_cols}")
+    # Ensure all expected PCA input features are present
+    missing_cols_pca = [col for col in expected_pca_features if col not in df.columns]
+    if missing_cols_pca:
+        raise ValueError(f"Missing columns for PCA: {missing_cols_pca}")
 
-    X_pca_input = data[expected_pca_features].copy()
+    X_pca_input = df[expected_pca_features].copy()
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
 
     pca_transformed = pca_1.transform(X_pca_input)
 
-    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']  # Use the correct names!
+    pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']
     pca_df = pd.DataFrame(pca_transformed, index=df.index, columns=pca_columns)
 
     # Concatenate the DataFrames, excluding original PCA columns from 'df'
     df = pd.concat([df, pca_df], axis=1)
-    df = df.drop(columns=pca_numerical_columns)
+    df = df.drop(columns=pca_numerical_columns, errors='ignore')
 
     print("--- After Other Categorical Encoding ---")
     print("Shape after other encoding:", df.shape)
