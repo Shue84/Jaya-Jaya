@@ -88,8 +88,8 @@ def data_preprocessing(data):
     print("Columns before encoding:\n", data.columns)
 
    # One-hot encode categorical features
-    encoded_data = onehot_encoder.transform(data[onehot_encode_cols])
-    encoded_cols = onehot_encoder.get_feature_names_out(onehot_encode_cols)
+    encoded_data = onehot_encoder.transform(data[onehot_encoded_cols])
+    encoded_cols = onehot_encoder.get_feature_names_out(onehot_encoded_cols)
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
