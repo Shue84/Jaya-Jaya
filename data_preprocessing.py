@@ -94,7 +94,7 @@ def data_preprocessing(data):
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
-   df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=onehot_encoded_cols + pca_numerical_columns)], axis=1)
+    df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=onehot_encoded_cols + pca_numerical_columns)], axis=1)
     
     print("--- After One-Hot Encoding ---")
     print("Shape after encoding:", data.shape)
