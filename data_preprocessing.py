@@ -93,20 +93,20 @@ def data_preprocessing(data):
     encoded_df = pd.DataFrame(encoded_data, columns=encoded_cols, index=data.index)
 
     # Concatenate the encoded columns with the original DataFrame (excluding the original categorical columns)
-    df = pd.concat([data.drop(columns=onehot_encoded_cols), encoded_df], axis=1)
-
+    df_processed = pd.concat([scaled_data, encoded_df, data.drop(columns=pca_numerical_columns + onehot_encoded_cols)], axis=1)
+    
     print("--- After One-Hot Encoding ---")
     print("Shape after encoding:", data.shape)
     print("Columns after encoding:\n", data.columns)
 
    # Encode the other categorical features
-    df['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(data['Daytime_evening_attendance'])
-    df['Fathers_occupation'] = encoder_Fathers_occupation.transform(data['Fathers_occupation'])
-    df['Fathers_qualification'] = encoder_Fathers_qualification.transform(data['Fathers_qualification'])
-    df['Gender'] = encoder_Gender.transform(data['Gender'])
-    df['Mothers_occupation'] = encoder_Mothers_occupation.transform(data['Mothers_occupation'])
-    df['Mothers_qualification'] = encoder_Mothers_qualification.transform(data['Mothers_qualification'])
-    df['Scholarship_holder'] = encoder_Scholarship_holder.transform(data['Scholarship_holder'])
+    df_processed['Daytime_evening_attendance'] = encoder_Daytime_evening_attendance.transform(df_processed['Daytime_evening_attendance'])
+    df_processed['Fathers_occupation'] = encoder_Fathers_occupation.transform(df_processed['Fathers_occupation'])
+    df_processed['Fathers_qualification'] = encoder_Fathers_qualification.transform(df_processed['Fathers_qualification'])
+    df_processed['Gender'] = encoder_Gender.transform(df_processed['Gender'])
+    df_processed['Mothers_occupation'] = encoder_Mothers_occupation.transform(df_processed['Mothers_occupation'])
+    df_processed['Mothers_qualification'] = encoder_Mothers_qualification.transform(df_processed['Mothers_qualification'])
+    df_processed['Scholarship_holder'] = encoder_Scholarship_holder.transform(df_processed['Scholarship_holder'])
     
    # Get the expected PCA input features
     expected_pca_features = list(pca_1.feature_names_in_)
@@ -116,7 +116,7 @@ def data_preprocessing(data):
     if missing_cols_pca:
         raise ValueError(f"Missing columns for PCA: {missing_cols_pca}")
 
-    X_pca_input = df[expected_pca_features].copy()
+    X_pca_input = df_processed[expected_pca_features].copy()
     print("--- Before PCA ---")
     print("Shape of X_pca_input:", X_pca_input.shape)
     print("NaNs in X_pca_input:\n", X_pca_input.isnull().sum())
@@ -124,15 +124,15 @@ def data_preprocessing(data):
     pca_transformed = pca_1.transform(X_pca_input)
 
     pca_columns = ['pc1_1', 'pc1_2', 'pc1_3']
-    pca_df = pd.DataFrame(pca_transformed, index=df.index, columns=pca_columns)
+    pca_df = pd.DataFrame(pca_transformed, index=df_processed.index, columns=pca_columns)
 
     # Concatenate the DataFrames, excluding original PCA columns from 'df'
-    df = pd.concat([df, pca_df], axis=1)
-    df = df.drop(columns=pca_numerical_columns, errors='ignore')
+    df_processed = pd.concat([df_processed, pca_df], axis=1)
+    df_processed = df_processed.drop(columns=expected_pca_features, errors='ignore')
 
     print("--- After Other Categorical Encoding ---")
-    print("Shape after other encoding:", df.shape)
-    print("Columns after other encoding:\n", df.columns)
+    print("Shape after other encoding:", df_processed.shape)
+    print("Columns after other encoding:\n", df_processed.columns)
 
     # Ensure the column order matches the training data
     correct_column_order = [
@@ -157,9 +157,9 @@ def data_preprocessing(data):
         'Course_9238', 'Course_9254', 'Course_9500', 'Course_9556',
         'Course_9670', 'Course_9773', 'Course_9853', 'Course_9991', 'pc1_1', 'pc1_2', 'pc1_3'
     ]
-    df = df.reindex(columns=correct_column_order)
+    df_processed = df_processed.reindex(columns=correct_column_order)
 
     print("--- Final Data Info (after reindexing) ---")
-    print("Shape of df:", df.shape)
-    print("Final data columns:\n", df.columns)
-    return df
+    print("Shape of df:", df_processed.shape)
+    print("Final data columns:\n", df_processed.columns)
+    return df_processed
