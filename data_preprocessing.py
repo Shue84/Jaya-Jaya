@@ -169,7 +169,7 @@ def data_preprocessing(data):
     df = df.drop(columns=pca_numerical_columns, errors='ignore')  # Drop original PCA columns
 
     if 'Previous_qualification_5' in df.columns:
-    df = df.drop(columns=['Previous_qualification_5'])
+        df = df.drop(columns=['Previous_qualification_5'])
 
     print("--- Final Data Info (after potential dropping of unseen column) ---")
     print("Shape of df:", df.shape)
